@@ -1,0 +1,15 @@
+<Configuration status="DEBUG">
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %X %m%n"/>
+        </Console>
+    </Appenders>
+    <Logger name="gr.mmichaildis.amqprunner" level="trace" additivity="false">
+        <appender-ref ref="Console"/>
+    </Logger>
+    <Loggers>
+        <Root level="debug">
+            <appender-ref ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

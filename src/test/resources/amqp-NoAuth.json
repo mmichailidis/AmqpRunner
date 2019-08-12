@@ -1,0 +1,36 @@
+{
+  "name": "broker",
+  "modelVersion": "6.0",
+  "ports": [
+    {
+      "name": "AMQP",
+      "port": "${qpid.port}",
+      "authenticationProvider": "none",
+      "transports": [
+        "TCP"
+      ],
+      "virtualhostaliases": [
+        {
+          "name": "defaultAlias",
+          "type": "defaultAlias"
+        },
+        {
+          "name": "hostnameAlias",
+          "type": "hostnameAlias"
+        },
+        {
+          "name": "nameAlias",
+          "type": "nameAlias"
+        }
+      ]
+    }
+  ],
+  "virtualhostnodes": [
+    {
+      "name": "default",
+      "type": "JSON",
+      "defaultVirtualHostNode": "true",
+      "virtualHostInitialConfiguration": "{\"type\" : \"Memory\",\"name\" : \"default\",\"modelVersion\" : \"6.0\"}"
+    }
+  ]
+}

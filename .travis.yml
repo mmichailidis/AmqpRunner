@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - openjdk8
+
+#install: pip install codecov
+
+git:
+  depth: 1
+
+script: echo "Initializing tests ..."
+
+jobs:
+  include:
+    - stage: Full run
+      install: skip
+      script: ./gradlew clean compileJava compileTestJava test jacocoTestReport
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
