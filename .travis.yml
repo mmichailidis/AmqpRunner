@@ -2,7 +2,7 @@ language: java
 jdk:
   - openjdk8
 
-#install: pip install codecov
+before_script: chmod +x ./gradlew
 
 git:
   depth: 1
