@@ -2,21 +2,18 @@ buildscript {
     repositories {
         jcenter()
     }
-
 }
 
 plugins {
-//    id 'java'
     id 'java-library'
     id 'jacoco'
     id 'maven-publish'
 }
 
-apply plugin: 'java-library'
 apply plugin: 'signing'
+apply plugin: 'maven'
 
 ext {
-    springBaseVersion = '5.1.0.RELEASE'
     jacksonVersion = "2.8.11"
     isRelease = false
 }
@@ -38,12 +35,13 @@ jacocoTestReport {
 }
 
 group 'gr.mmichailidis'
-version '1.0.0'
+version '1.1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    jcenter()
     mavenCentral()
     maven { url 'http://repo.spring.io/milestone' }
 }
@@ -61,24 +59,13 @@ dependencies {
     implementation group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
 
-    implementation('org.apache.qpid:qpid-broker:7.0.6') {
+    implementation('org.apache.qpid:qpid-broker:7.1.3') {
         force = true
         exclude(module: "qpid-broker-plugins-logging-logback")
         exclude(module: "com.sleepycat:je:7.4.5")
         exclude group: "ch.qos.logback", module: "logback-classic"
-        exclude group: "ch.qos.logback", module: "logback-cor`e"
+        exclude group: "ch.qos.logback", module: "logback-core"
     }
-
-    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-common', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-api', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-servlet', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-io', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-http', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-util', version: '9.4.3.v20170317'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-continuation', version: '9.4.3.v20170317'
 
     implementation group: 'com.sleepycat', name: 'je', version: '18.1.11'
     implementation group: 'io.projectreactor.rabbitmq', name: 'reactor-rabbitmq', version: '1.0.0.RELEASE'
