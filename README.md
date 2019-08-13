@@ -3,6 +3,7 @@
 
 [![codecov](https://codecov.io/gh/mmichailidis/AmqpRunner/branch/master/graph/badge.svg)](https://codecov.io/gh/mmichailidis/AmqpRunner)
 
+[![Maven Central](https://img.shields.io/maven-central/v/gr.mmichailidis/amqprunner.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22gr.mmichailidis%22%20AND%20a:%22amqprunner%22)
 
 AmqpRunner is a JUnit runner that provides a fluent api for creating in 
 memory amqp and validating the packets that reached it. It extends 
@@ -50,8 +51,8 @@ The customizations are :
 |:---------------|:-----------------|:--------|:---------------------------------------------------------------------|
 | name           | ""               | String  | sets the name of the server for identification and injection         |
 | amqpPort       | 0                | Integer | the port on which amqp will listen                                   |
-| managementPort | 0                | Integer | the port on which the UI will listen (localhost:managementPort)      |
-| management     | false            | Boolean | if management should start ( huge overheat.. use for manual testing) |
+| managementPort | 0                | Integer | (Unavailable) the port on which the UI will listen (localhost:managementPort)      |
+| management     | false            | Boolean | (Unavailable) if management should start ( huge overheat.. use for manual testing) |
 | username       | guest            | String  | the username for the server                                          |
 | password       | guest            | String  | the password for the server                                          |
 | workPath       | ./build/amqp-    | String  | the broker will create a folder to store data. Unavoidable           |
@@ -161,3 +162,12 @@ public class MyTest {
 
 A common test scenario is pushing a message in the queue A in which your application may listen and expect 
 a result on some other queue.
+
+### Import to your project
+```xml
+<dependency>
+  <groupId>gr.mmichailidis</groupId>
+  <artifactId>amqprunner</artifactId>
+  <version>1.1.0</version>
+</dependency>
+```
