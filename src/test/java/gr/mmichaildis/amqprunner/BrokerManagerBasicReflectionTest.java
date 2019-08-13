@@ -51,7 +51,10 @@ public class BrokerManagerBasicReflectionTest {
 
         @Test
         public void demoTest() {
-            assertTrue(true);
+            assertNotNull(brokerManager);
+            assertNotNull(brokerManagerSq);
+            assertNotNull(fqPort);
+            assertNotNull(sqPort);
         }
     }
 
