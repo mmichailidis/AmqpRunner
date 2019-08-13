@@ -160,3 +160,12 @@ public class MyTest {
 
 A common test scenario is pushing a message in the queue A in which your application may listen and expect 
 a result on some other queue.
+
+### Import to your project
+```xml
+<dependency>
+  <groupId>gr.mmichailidis</groupId>
+  <artifactId>amqprunner</artifactId>
+  <version>1.1.0</version>
+</dependency>
+```
