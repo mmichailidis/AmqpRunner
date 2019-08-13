@@ -16,10 +16,11 @@
 package gr.mmichaildis.amqprunner.broker;
 
 import gr.mmichaildis.amqprunner.BrokerManager;
-import java.util.List;
-import java.util.function.Function;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * A helper class containing references on {@link AssertionVerification} and a {@link List} which are meant
@@ -30,6 +31,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class ReferenceHolder {
-    AssertionVerification assertionVerification;
-    List<Function<Void, Void>> cleanUpList;
+    protected AssertionVerification assertionVerification;
+    protected List<Function<Void, Void>> queueCleanUpList;
+    protected List<Function<Void, Void>> exchangeCleanUpList;
 }

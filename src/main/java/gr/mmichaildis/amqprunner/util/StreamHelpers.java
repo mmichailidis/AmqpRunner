@@ -15,15 +15,19 @@
  */
 package gr.mmichaildis.amqprunner.util;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
  * @author MMichailidis
  */
-public class StreamHelpers {
+public abstract class StreamHelpers {
 
     public static <T> Predicate<T> not(final Predicate<? super T> with) {
         return (final T t) -> with.negate().test(t);
     }
 
+    public static <T, U> Function<T, U> replaceWith(U to) {
+        return ignore -> to;
+    }
 }

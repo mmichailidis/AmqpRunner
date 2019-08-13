@@ -23,6 +23,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Delivery;
 import gr.mmichaildis.amqprunner.BrokerManager;
 import gr.mmichaildis.amqprunner.TestFunction;
+import io.vavr.Tuple;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import io.vavr.control.Try;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
 
 import static gr.mmichaildis.amqprunner.util.StreamHelpers.not;
+import static gr.mmichaildis.amqprunner.util.StreamHelpers.replaceWith;
 import static java.lang.Thread.sleep;
 
 /**
@@ -518,88 +520,25 @@ public final class BrokerTester {
      * @throws TimeoutException in-case the connection has timeout.
      */
     public Sender initialize(final SenderOptions senderOptions) throws IOException, TimeoutException {
-        Connection connection = receiverOptions.getConnectionFactory().newConnection();
+        final Connection connection = receiverOptions.getConnectionFactory().newConnection();
         channel = connection.createChannel();
 
-        List<String> exchangeNames = List.empty();
-
-        for (AMQPBinding binding : bindings.values()) {
-            channel.queueDeclare(
-                    binding.getQueueProperties().getName(),
-                    binding.getQueueProperties().isDurable(),
-                    binding.getQueueProperties().isExclusive(),
-                    binding.getQueueProperties().isAutoDelete(),
-                    binding.getQueueProperties().getArguments()
-            );
-
-            channel.exchangeDeclare(
-                    binding.getExchangeProperties().getName(),
-                    binding.getExchangeProperties().getType().getType(),
-                    binding.getExchangeProperties().isDurable(),
-                    binding.getExchangeProperties().isAutoDelete(),
-                    binding.getExchangeProperties().getArguments()
-            );
-
-            channel.queueBind(binding.getQueueProperties().getName(), binding.getExchangeProperties().getName(),
-                    binding.getRoutingKey());
-
-            exchangeNames = exchangeNames.append(binding.getExchangeProperties().getName());
-
-            referenceHolder.getCleanUpList().add(ignore -> {
-                try {
-                    channel.queueDeleteNoWait(binding.getQueueProperties().getName(), false, false);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            });
-        }
-
-        exchangeNames.forEach(exchangeName -> referenceHolder.getCleanUpList().add(ignore -> {
-            try {
-                channel.exchangeDeleteNoWait(exchangeName, false);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }));
+        List.ofAll(bindings.values())
+                .map(binding -> Tuple.of(
+                        declareQueue(channel, binding.getQueueProperties()).toOption(),
+                        declareExchange(channel, binding.getExchangeProperties()).toOption(),
+                        binding.getRoutingKey()
+                ))
+                .filter(tuple -> tuple._1().isDefined())
+                .filter(tuple -> tuple._2().isDefined())
+                .forEach(tuple -> Try.of(() -> channel.queueBind(tuple._1.get(), tuple._2.get(), tuple._3))
+                        .onFailure(Throwable::printStackTrace));
 
         Stream.ofAll(singleQueues.values())
-                .forEach(queue -> Try.run(
-                        () -> channel.queueDeclare(
-                                queue.getName(),
-                                queue.isDurable(),
-                                queue.isExclusive(),
-                                queue.isAutoDelete(),
-                                queue.getArguments()))
-                        .onFailure(Throwable::printStackTrace)
-                        .forEach(ignore -> referenceHolder.getCleanUpList().add(ignore2 -> {
-                            try {
-                                channel.queueDeleteNoWait(queue.getName(), false, false);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        })));
+                .forEach(queue -> declareQueue(channel, queue));
 
         Stream.ofAll(singleExchanges.values())
-                .forEach(exchange -> Try.run(
-                        () -> channel.exchangeDeclare(
-                                exchange.getName(),
-                                exchange.getType().getType(),
-                                exchange.isDurable(),
-                                exchange.isAutoDelete(),
-                                exchange.getArguments()
-                        ))
-                        .onFailure(Throwable::printStackTrace)
-                        .forEach(ignore -> referenceHolder.getCleanUpList().add(ignore2 -> {
-                            try {
-                                channel.exchangeDeleteNoWait(exchange.getName(), false);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        })));
+                .forEach(exchange -> declareExchange(channel, exchange));
 
         latch.countDown();
 
@@ -616,6 +555,62 @@ public final class BrokerTester {
                         ? senderOptions
                         : senderOptions.connectionFactory(receiverOptions.getConnectionFactory())
         );
+    }
+
+    /**
+     * Declares a queue in the given {@link Channel} with the given {@link QueueProperties} defining a
+     * cleanUp function in the process.
+     *
+     * @param channel         The {@link Channel} in which the queue will be declared.
+     * @param queueProperties The queue definition.
+     * @return A {@link Try} containing the queue name.
+     */
+    private Try<String> declareQueue(final Channel channel,
+                                     final QueueProperties queueProperties) {
+        return Try.run(() -> channel
+                .queueDeclare(
+                        queueProperties.getName(),
+                        queueProperties.isDurable(),
+                        queueProperties.isExclusive(),
+                        queueProperties.isAutoDelete(),
+                        queueProperties.getArguments()))
+                .onFailure(Throwable::printStackTrace)
+                .map(ignore -> referenceHolder.getQueueCleanUpList()
+                        .add(ignore2 ->
+                                Try.run(() -> channel.queueDeleteNoWait(queueProperties.getName(),
+                                        false, false))
+                                        .onFailure(Throwable::printStackTrace)
+                                        .getOrElse(() -> null)
+                        ))
+                .map(replaceWith(queueProperties.getName()));
+    }
+
+    /**
+     * Declares an exchange in the given {@link Channel} with the given {@link ExchangeProperties} defining a
+     * cleanUp function in the process.
+     *
+     * @param channel            The {@link Channel} in which the exchange will be declared.
+     * @param exchangeProperties The exchange definition.
+     * @return A {@link Try} containing the queue name.
+     */
+    private Try<String> declareExchange(final Channel channel,
+                                        final ExchangeProperties exchangeProperties) {
+        return Try.run(() -> channel
+                .exchangeDeclare(
+                        exchangeProperties.getName(),
+                        exchangeProperties.getType().getType(),
+                        exchangeProperties.isDurable(),
+                        exchangeProperties.isAutoDelete(),
+                        exchangeProperties.getArguments()
+                ))
+                .onFailure(Throwable::printStackTrace)
+                .map(ignore -> referenceHolder.getExchangeCleanUpList()
+                        .add(ignore2 ->
+                                Try.run(() -> channel.exchangeDeleteNoWait(exchangeProperties.getName(), false))
+                                        .onFailure(Throwable::printStackTrace)
+                                        .getOrElse(() -> null)
+                        ))
+                .map(replaceWith(exchangeProperties.getName()));
     }
 
     /**

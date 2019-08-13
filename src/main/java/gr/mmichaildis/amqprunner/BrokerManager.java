@@ -21,14 +21,19 @@ import gr.mmichaildis.amqprunner.broker.ReferenceHolder;
 import gr.mmichaildis.amqprunner.util.PortExtractingLauncherListener;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.qpid.server.SystemLauncher;
 import org.apache.qpid.server.SystemLauncherListener.DefaultSystemLauncherListener;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 import java.util.*;
 
+import static gr.mmichaildis.amqprunner.util.StreamHelpers.not;
+import static gr.mmichaildis.amqprunner.util.StreamHelpers.replaceWith;
+import static io.vavr.API.*;
 import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -47,7 +52,11 @@ public class BrokerManager {
     private static final Long SLEEP_STEP = 100L;
     private final String introduction;
 
-    private static ReferenceHolder refHolder;
+    /**
+     * The path that contains the configuration file for qpid initialization.
+     */
+    private static final String INITIAL_CONFIG_PATH = "amqp.json";
+    private static final ReferenceHolder refHolder = new ReferenceHolder();
 
     private final String username;
     private final String password;
@@ -82,8 +91,9 @@ public class BrokerManager {
         this.requestedAmqpPort = requestedAmqpPort;
         this.requestedWorkPath = requestedWorkPath;
         this.requestedLogPath = requestedLogPath;
-        refHolder = new ReferenceHolder();
-        refHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
+
+        refHolder.setQueueCleanUpList(Collections.synchronizedList(new LinkedList<>()));
+        refHolder.setExchangeCleanUpList(Collections.synchronizedList(new LinkedList<>()));
 
         introduction = "[BrokerManager" + (name.isEmpty() ? "" : "-" + name) + "] ";
         // this.systemLauncher = new SystemLauncher();
@@ -97,11 +107,6 @@ public class BrokerManager {
         this.uuid = UUID.randomUUID();
     }
 
-    /**
-     * The path that contains the configuration file for qpid initialization.
-     */
-    private static final String INITIAL_CONFIG_PATH = "amqp.json";
-    private static final String INITIAL_CONFIG_PATH_NETWORK = "amqpNetwork.json";
 
     /**
      * Start the broker with the properties that was initialized with.
@@ -160,15 +165,15 @@ public class BrokerManager {
         systemLauncher.shutdown();
         log.info("SystemLauncher shutdown complete. Cleaning up.");
 
-        File db = new File(requestedWorkPath + uuid);
-        File log = new File(requestedLogPath + uuid);
+        final File db = new File(requestedWorkPath + uuid);
+        final File log = new File(requestedLogPath + uuid);
 
         Stream.of(db, log)
                 .filter(File::exists)
                 .forEach(BrokerManager::deleteFolder);
 
         try {
-            Thread.sleep(5000);
+            sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -200,22 +205,27 @@ public class BrokerManager {
 
     private static void deleteFile(File file, Integer retryStep) {
         try {
-            Thread.sleep(2500 * retryStep);
+            sleep(2500 * retryStep);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (!file.delete() && retryStep < 3) {
-            deleteFile(file, retryStep + 1);
-        } else {
-            log.error("File {} failed to be deleted after {} retries", file, retryStep);
-        }
+        Try.run(() -> sleep(2500 * retryStep))
+                .filter(ignore -> retryStep < 3)
+                .map(ignore -> file.delete())
+                .filter(not(Boolean::booleanValue))
+                .map(replaceWith(retryStep < 3))
+                .forEach(hasMoreSteps -> Match(hasMoreSteps).of(
+                        Case($(true), run(() -> deleteFile(file, retryStep + 1))),
+                        Case($(false), run(() -> log.error("File {} failed to be deleted after {} retries", file, retryStep)))
+                ));
     }
 
     /**
      * Cleans up all the queues and exchanges in the broker.
      */
     public void cleanUp() {
-        refHolder.getCleanUpList().forEach(r -> r.apply(null));
+        refHolder.getQueueCleanUpList().forEach(r -> r.apply(null));
+        refHolder.getExchangeCleanUpList().forEach(r -> r.apply(null));
     }
 
     private Map<String, Object> createSystemConfig() {

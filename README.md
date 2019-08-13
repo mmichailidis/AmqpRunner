@@ -1,9 +1,9 @@
 # AmqpRunner
 [![Build Status](https://travis-ci.org/mmichailidis/AmqpRunner.svg?branch=master)](https://travis-ci.org/mmichailidis/AmqpRunner)
-
 [![codecov](https://codecov.io/gh/mmichailidis/AmqpRunner/branch/master/graph/badge.svg)](https://codecov.io/gh/mmichailidis/AmqpRunner)
-
 [![Maven Central](https://img.shields.io/maven-central/v/gr.mmichailidis/amqprunner.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22gr.mmichailidis%22%20AND%20a:%22amqprunner%22)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a26f2d10a3384dec9832bec64fd082fa)](https://www.codacy.com/app/mmichailidis/AmqpRunner?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mmichailidis/AmqpRunner&amp;utm_campaign=Badge_Grade)
+[![License](https://img.shields.io/github/license/mmichailidis/amqprunner.svg)](https://opensource.org/licenses/Apache-2.0)
 
 AmqpRunner is a JUnit runner that provides a fluent api for creating in 
 memory amqp and validating the packets that reached it. It extends 

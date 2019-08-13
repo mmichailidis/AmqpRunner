@@ -42,9 +42,9 @@ final class AssertionTime {
      * set the target to {@code totalMillis} and reset the counter.
      *
      * @param totalMillis The millis that will be either setup as the new target or will put the current target ahead.
-     * @param override {@code true} to override the target, {@code false} to push ahead.
+     * @param override    {@code true} to override the target, {@code false} to push ahead.
      */
-    void updateTotalSeconds(Long totalMillis, Boolean override) {
+    protected void updateTotalSeconds(Long totalMillis, Boolean override) {
         if (override) {
             this.totalSeconds.set(totalMillis);
             currentMillis.set(0L);
@@ -60,7 +60,7 @@ final class AssertionTime {
      * @param sleepStep the amount of time to update the counter.
      * @return The difference between the counter and the target.
      */
-    Long updateCurrentMillis(Long sleepStep) {
+    protected Long updateCurrentMillis(Long sleepStep) {
         return totalSeconds.get() - currentMillis.updateAndGet(curr -> curr + sleepStep);
     }
 }

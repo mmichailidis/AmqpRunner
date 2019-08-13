@@ -33,12 +33,12 @@ public class PortExtractingLauncherListener implements SystemLauncherListener {
 
     @Override
     public void beforeStartup() {
-
+        //empty
     }
 
     @Override
     public void errorOnStartup(final RuntimeException e) {
-
+        //empty
     }
 
     @Override
@@ -61,17 +61,17 @@ public class PortExtractingLauncherListener implements SystemLauncherListener {
 
     @Override
     public void onContainerClose(final SystemConfig<?> systemConfig) {
-
+        //empty
     }
 
     @Override
     public void onShutdown(final int exitCode) {
-
+        //empty
     }
 
     @Override
     public void exceptionOnShutdown(final Exception e) {
-
+        //empty
     }
 
     public Map<String, Integer> getPorts() {

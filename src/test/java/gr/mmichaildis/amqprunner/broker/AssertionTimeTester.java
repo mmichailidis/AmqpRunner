@@ -15,9 +15,9 @@
  */
 package gr.mmichaildis.amqprunner.broker;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author MMichailidis
@@ -25,31 +25,31 @@ import org.junit.Test;
 public class AssertionTimeTester {
 
     @Test
-    public void test_updateTotalSeconds_noOverride() {
+    public void testUpdateTotalSecondsNoOverride() {
         AssertionTime at = new AssertionTime(1);
 
-        assertEquals( 1000, (long) at.updateCurrentMillis(0L));
+        assertEquals(1000, (long) at.updateCurrentMillis(0L));
 
         at.updateTotalSeconds(100L, false);
 
-        assertEquals( 1100, (long) at.updateCurrentMillis(0L));
+        assertEquals(1100, (long) at.updateCurrentMillis(0L));
     }
 
     @Test
-    public void test_updateTotalSeconds_override() {
+    public void testUpdateTotalSecondsOverride() {
         AssertionTime at = new AssertionTime(1);
 
-        assertEquals( 1000, (long) at.updateCurrentMillis(0L));
+        assertEquals(1000, (long) at.updateCurrentMillis(0L));
 
         at.updateTotalSeconds(5000L, true);
 
-        assertEquals( 5000, (long) at.updateCurrentMillis(0L));
+        assertEquals(5000, (long) at.updateCurrentMillis(0L));
     }
 
     @Test
     public void updateCurrentMillis() {
         AssertionTime at = new AssertionTime(1);
 
-        assertEquals( 950, (long) at.updateCurrentMillis(50L));
+        assertEquals(950, (long) at.updateCurrentMillis(50L));
     }
 }

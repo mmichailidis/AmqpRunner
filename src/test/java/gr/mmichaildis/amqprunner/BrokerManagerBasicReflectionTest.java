@@ -23,8 +23,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -52,6 +51,7 @@ public class BrokerManagerBasicReflectionTest {
 
         @Test
         public void demoTest() {
+            assertTrue(true);
         }
     }
 

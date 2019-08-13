@@ -69,8 +69,8 @@ public final class AssertionVerification {
      * the {@link AssertionError} found in all the registered assertions.
      *
      * @return the {@link List} which contains all the {@link AssertionError} found.
-     *         If the {@link AssertionVerification#isValid()} was not called before
-     *         this then the {@link List} is empty.
+     * If the {@link AssertionVerification#isValid()} was not called before
+     * this then the {@link List} is empty.
      */
     public List<AssertionError> getErrors() {
         return assertionErrors;
@@ -82,7 +82,7 @@ public final class AssertionVerification {
      * @param identifier The assertions identifier.
      * @param valid      The valid status of the identified assertion.
      */
-    void setValid(String identifier, boolean valid) {
+    protected void setValid(String identifier, boolean valid) {
         final AssertionPair pair = this.response.get(identifier);
         pair.setValid(valid);
         this.response.put(identifier, pair);
@@ -94,7 +94,7 @@ public final class AssertionVerification {
      * @param identifier The assertions identifier.
      * @param e          The {@link AssertionError} that will be registered for the identified assertion.
      */
-    void setAssertionError(String identifier, AssertionError e) {
+    protected void setAssertionError(String identifier, AssertionError e) {
         final AssertionPair pair = this.response.get(identifier);
         pair.setAssertionError(e);
         this.response.put(identifier, pair);
@@ -106,7 +106,7 @@ public final class AssertionVerification {
      *
      * @param identifier The identifier that will identify each assertion.
      */
-    void register(String identifier, String userProvidedIdentifier) {
+    protected void register(String identifier, String userProvidedIdentifier) {
         response.put(identifier, AssertionPair.initial(userProvidedIdentifier));
         block.put(identifier, new AssertionTime(0));
     }
@@ -117,9 +117,9 @@ public final class AssertionVerification {
      *
      * @param nextName The assertion name which will be used to create the unique identifier.
      * @return The unique identifier which should be used for registration and identification on
-     *         the main {@link Thread}.
+     * the main {@link Thread}.
      */
-    String getNextName(String nextName) {
+    protected String getNextName(String nextName) {
         Integer identifier = nameProvider.getOrDefault(nextName, 0);
         identifier += 1;
         nameProvider.put(nextName, identifier);
@@ -131,7 +131,7 @@ public final class AssertionVerification {
      *
      * @param identifier The assertions identifier.
      */
-    void clearAssertionError(String identifier) {
+    protected void clearAssertionError(String identifier) {
         final AssertionPair pair = response.get(identifier);
         pair.setAssertionError(null);
         response.put(identifier, pair);
@@ -143,7 +143,7 @@ public final class AssertionVerification {
      * @param identifier The identifier that will have it sleep increased.
      * @param sleepTime  The N <b>seconds</b> that will be increase.
      */
-    void updateBlock(String identifier, Integer sleepTime) {
+    protected void updateBlock(String identifier, Integer sleepTime) {
         this.block.get(identifier)
                 .updateTotalSeconds(sleepTime * SECOND_TO_MILLIS, false);
     }
@@ -166,7 +166,7 @@ public final class AssertionVerification {
      *
      * @param sleepStep the step in time
      * @return {@code true} if at least one assertion requires more time. {@code false} if and only if all
-     *         the assertions are completed and responds they require no more time.
+     * the assertions are completed and responds they require no more time.
      */
     public boolean shouldBlock(Long sleepStep) {
         return block.values().stream()

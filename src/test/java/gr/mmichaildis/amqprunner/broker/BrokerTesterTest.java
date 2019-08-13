@@ -23,8 +23,6 @@ import com.rabbitmq.client.Delivery;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import lombok.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
 import reactor.rabbitmq.Receiver;
@@ -49,14 +47,6 @@ import static org.mockito.Mockito.*;
  * @author MMichailidis
  */
 public class BrokerTesterTest {
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     @Test
     public void defaultSleep() throws Exception {
@@ -326,9 +316,8 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNextCount() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
-        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class), "TestingTest", referenceHolder);
+        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
+                "TestingTest", getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -354,9 +343,8 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNextCountIgnoreMoreEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
-        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class), "TestingTest", referenceHolder);
+        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
+                "TestingTest", getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -383,12 +371,10 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNextCountLessEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -423,13 +409,11 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNextCountUnexpectedEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
 
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -467,13 +451,11 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNextCountMultipleUnexpectedEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
 
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -515,13 +497,11 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNoEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
 
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -543,13 +523,11 @@ public class BrokerTesterTest {
 
     @Test
     public void expectNoEmissionsHadEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
 
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
 
@@ -584,9 +562,8 @@ public class BrokerTesterTest {
 
     @Test
     public void assertNextWith() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
-        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class), "TestingTest", referenceHolder);
+        final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
+                "TestingTest", getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
         final Delivery mock1 = mock(Delivery.class);
@@ -621,12 +598,10 @@ public class BrokerTesterTest {
 
     @Test
     public void assertNextWithUnexpectedEmission() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
         final Delivery mock1 = mock(Delivery.class);
@@ -673,12 +648,10 @@ public class BrokerTesterTest {
 
     @Test
     public void assertNextWithTooLittleEmissions() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
         final Delivery mock1 = mock(Delivery.class);
@@ -722,12 +695,10 @@ public class BrokerTesterTest {
 
     @Test
     public void assertNextWithAssertionFailure() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
         final Delivery mock1 = mock(Delivery.class);
@@ -770,12 +741,10 @@ public class BrokerTesterTest {
 
     @Test
     public void assertNextWithObjectMapperIOException() throws Exception {
-        final ReferenceHolder referenceHolder = new ReferenceHolder();
-        referenceHolder.setCleanUpList(Collections.synchronizedList(new LinkedList<>()));
         final String brokerName = "TestingTest";
         final String queueName = "someQueue";
         final BrokerTester brokerTester = new BrokerTester(mock(ConnectionFactory.class),
-                brokerName, referenceHolder);
+                brokerName, getReferenceHolder());
 
         final TestPublisher<Delivery> testPublisher = TestPublisher.create();
         final Delivery mock1 = mock(Delivery.class);
@@ -864,6 +833,15 @@ public class BrokerTesterTest {
         final AssertionVerification assertionVerification = (AssertionVerification) verification.get(brokerTester);
 
         return Tuple.of(assertionVerification, o);
+    }
+
+    private ReferenceHolder getReferenceHolder() {
+        final ReferenceHolder referenceHolder = new ReferenceHolder();
+
+        referenceHolder.setQueueCleanUpList(Collections.synchronizedList(new LinkedList<>()));
+        referenceHolder.setExchangeCleanUpList(Collections.synchronizedList(new LinkedList<>()));
+
+        return referenceHolder;
     }
 
     @Getter
