@@ -46,23 +46,6 @@ public @interface AmqpSetup {
     int amqpPort() default 0;
 
     /**
-     * The port on which the {@link BrokerManager} will listen for ui connections
-     * to the amqp manager
-     *
-     * @return The port requested for the manager
-     */
-    int managementPort() default 0;
-
-    /**
-     * If the {@link BrokerManager} should launch the manager instance. Keep in mind that the manager UI
-     * creates a huge overheat to the run of the test and should not be launched unless manual testing
-     * or verification with the eye is required.
-     *
-     * @return {@link Boolean#TRUE} if it should launch a manager instance else {@link Boolean#FALSE}
-     */
-    boolean management() default false;
-
-    /**
      * The username of the {@link BrokerManager} that will be used.
      *
      * @return The requested username

@@ -56,8 +56,6 @@ public class BrokerManager {
     private final Map<String, Integer> ports;
 
     private final Integer requestedAmqpPort;
-    private final Integer requestedHttpPort;
-    private final boolean requestedManagement;
     private final String requestedWorkPath;
     private final String requestedLogPath;
 
@@ -67,27 +65,21 @@ public class BrokerManager {
      * Creates a {@link BrokerManager} with a username / password
      * but doesn't initialize qpid.
      *
-     * @param username            The username of the broker.
-     * @param password            The password of the broker.
-     * @param name                The name of this {@link BrokerManager} instance.
-     * @param requestedAmqpPort   The amqp port in which was requested to start.
-     * @param requestedHttpPort   The http port in which was requested to start.
-     * @param requestedManagement If management should start.
-     * @param requestedWorkPath   The dir for the work folder to be written.
-     * @param requestedLogPath    The dir for the log folder to be written.
+     * @param username          The username of the broker.
+     * @param password          The password of the broker.
+     * @param name              The name of this {@link BrokerManager} instance.
+     * @param requestedAmqpPort The amqp port in which was requested to start.
+     * @param requestedWorkPath The dir for the work folder to be written.
+     * @param requestedLogPath  The dir for the log folder to be written.
      */
     public BrokerManager(final String username,
                          final String password,
                          final String name,
                          final Integer requestedAmqpPort,
-                         final Integer requestedHttpPort,
-                         final boolean requestedManagement,
                          final String requestedWorkPath,
                          final String requestedLogPath) {
         this.name = name;
         this.requestedAmqpPort = requestedAmqpPort;
-        this.requestedHttpPort = requestedHttpPort;
-        this.requestedManagement = requestedManagement;
         this.requestedWorkPath = requestedWorkPath;
         this.requestedLogPath = requestedLogPath;
         refHolder = new ReferenceHolder();
@@ -124,8 +116,6 @@ public class BrokerManager {
         conf.put("qpid.pass", password);
 
         log.info(introduction + "The uuid used for this instance is : " + uuid);
-
-        conf.put("qpid.http_port", String.valueOf(requestedHttpPort));
 
         conf.put("QPID_WORK", requestedWorkPath + uuid);
         conf.put("derby.system.home", requestedLogPath + uuid);
@@ -230,13 +220,7 @@ public class BrokerManager {
 
     private Map<String, Object> createSystemConfig() {
         Map<String, Object> attributes = new HashMap<>();
-        URL initialConfig;
-
-        if (requestedManagement) {
-            initialConfig = BrokerManager.class.getClassLoader().getResource(INITIAL_CONFIG_PATH_NETWORK);
-        } else {
-            initialConfig = BrokerManager.class.getClassLoader().getResource(INITIAL_CONFIG_PATH);
-        }
+        final URL initialConfig = BrokerManager.class.getClassLoader().getResource(INITIAL_CONFIG_PATH);
 
         if (Objects.isNull(initialConfig)) {
             throw new UnsupportedOperationException("Unexpected null object on initial config");
@@ -271,10 +255,6 @@ public class BrokerManager {
 
     protected Integer getAmqpPort() {
         return ports.get("AMQP");
-    }
-
-    protected Option<Integer> getHttpPort() {
-        return Option.of(ports.get("HTTP"));
     }
 
     protected String getName() {
