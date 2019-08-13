@@ -35,13 +35,9 @@ public class BrokerManagerBasicReflectionTest {
     @AmqpCreator({
             @AmqpSetup(
                     name = "fq",
-                    amqpPort = 8095,
-                    managementPort = 8097,
-                    management = true),
+                    amqpPort = 8095),
             @AmqpSetup(name = "sq",
-                    amqpPort = 8094,
-                    managementPort = 8096,
-                    management = true)})
+                    amqpPort = 8094)})
     public static class SomeTest {
 
         @AmqpMock("fq")
@@ -86,11 +82,9 @@ public class BrokerManagerBasicReflectionTest {
 
         final Map<String, Integer> fqMap = new HashMap<>();
         fqMap.put("AMQP", 8095);
-        fqMap.put("HTTP", 8097);
 
         final Map<String, Integer> sqMap = new HashMap<>();
         sqMap.put("AMQP", 8094);
-        sqMap.put("HTTP", 8096);
 
         final Field ports = BrokerManager.class.getDeclaredField("ports");
         ports.setAccessible(true);

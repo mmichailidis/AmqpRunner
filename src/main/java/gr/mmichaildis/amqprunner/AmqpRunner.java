@@ -90,19 +90,13 @@ public class AmqpRunner extends SpringJUnit4ClassRunner {
                         amqpSetup.password(),
                         amqpSetup.name(),
                         amqpSetup.amqpPort(),
-                        amqpSetup.managementPort(),
-                        amqpSetup.management(),
                         amqpSetup.workPath(),
                         amqpSetup.logPath()))
                 .forEach(manager -> brokerManager.put(manager.getName(), manager));
 
         List.ofAll(brokerManager.values())
-                .flatMap(manager -> Try.run(manager::startBroker)
-                        .onFailure(Throwable::printStackTrace)
-                        .map(ignore -> manager))
-                .forEach(manager -> manager.getHttpPort()
-                        .forEach(httpPort -> log.info("The BrokerManager UI with the name {} listens to {} ",
-                                manager.getName(), httpPort)));
+                .forEach(manager -> Try.run(manager::startBroker)
+                        .onFailure(Throwable::printStackTrace));
 
         super.run(notifier);
 

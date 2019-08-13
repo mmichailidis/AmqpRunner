@@ -50,8 +50,6 @@ The customizations are :
 |:---------------|:-----------------|:--------|:---------------------------------------------------------------------|
 | name           | ""               | String  | sets the name of the server for identification and injection         |
 | amqpPort       | 0                | Integer | the port on which amqp will listen                                   |
-| managementPort | 0                | Integer | the port on which the UI will listen (localhost:managementPort)      |
-| management     | false            | Boolean | if management should start ( huge overheat.. use for manual testing) |
 | username       | guest            | String  | the username for the server                                          |
 | password       | guest            | String  | the password for the server                                          |
 | workPath       | ./build/amqp-    | String  | the broker will create a folder to store data. Unavoidable           |

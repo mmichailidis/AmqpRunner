@@ -37,8 +37,7 @@ public class BrokerManagerTest {
         final String logPath = "./build/amqpLog-";
 
         final BrokerManager bm = new BrokerManager("hello", "world", "",
-                0, 0,
-                true, workPath,
+                0, workPath,
                 logPath);
 
         bm.startBroker();
