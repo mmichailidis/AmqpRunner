@@ -155,7 +155,7 @@ public final class AssertionVerification {
      * @param identifier The identifier that will have it sleep increased.
      * @param sleepTime  The N <b>seconds</b> that will be set.
      */
-    void setBlock(String identifier, Integer sleepTime) {
+    protected void setBlock(String identifier, Integer sleepTime) {
         this.block.get(identifier).updateTotalSeconds(sleepTime * SECOND_TO_MILLIS,
                 true);
     }
@@ -200,7 +200,7 @@ public final class AssertionVerification {
      *
      * @param identifier The assertions identifier.
      */
-    void removeBlock(String identifier) {
+    protected void removeBlock(String identifier) {
         block.get(identifier).updateTotalSeconds(150L, true);
     }
 }
