@@ -1,4 +1,5 @@
 # AmqpRunner
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1101928aa7ad4aa690a2eb86c2e054ea)](https://app.codacy.com/app/mmichailidis/AmqpRunner?utm_source=github.com&utm_medium=referral&utm_content=mmichailidis/AmqpRunner&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/mmichailidis/AmqpRunner.svg?branch=master)](https://travis-ci.org/mmichailidis/AmqpRunner)
 
 [![codecov](https://codecov.io/gh/mmichailidis/AmqpRunner/branch/master/graph/badge.svg)](https://codecov.io/gh/mmichailidis/AmqpRunner)
