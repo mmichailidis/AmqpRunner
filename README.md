@@ -62,7 +62,7 @@ due to locks). To ensure no collisions between the brokers will appear a uuid wi
 path (thats why the - in the end )</sub> 
 
 `@AmqpMock` and `@AmqpPort` accept only a single attribute which is the name of the broker which will
- provide the injections `@AmqpMock("myCoolBroker")` will get the instance created by `@AmqpSetup(name = "myCoolBroker)`
+ provide the injections `@AmqpMock("myCoolBroker")` will get the instance created by `@AmqpSetup(name = "myCoolBroker")`
 
 ---
 
