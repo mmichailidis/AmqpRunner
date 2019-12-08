@@ -68,6 +68,66 @@ path (thats why the - in the end )</sub>
 
 After you are all setup and ready to test you will propably need a way to validate the data that reached your amqp.
 
+## Declare a Queue
+```java
+QueueProperties q = QueueProperties
+  .queueBuilder()
+  .durable(true)
+  .exclusive(true)
+  .autoDelete(true)
+  .name("aQueue")
+  .arguments(new HashMap<>())
+  .build()
+
+brokerManager.tester()
+  .declareQueue(q);
+```
+## Declare an Exchange
+```java
+ExchangeProperties e = ExchangeProperties
+  .exchangeBuilder()
+  .autoDelete(true)
+  .durable(true)
+  .name("anExchange")
+  .type(BuiltinExchangeType.DIRECT)
+  .arguments(new HashMap<>())
+  .build()
+
+brokerManager.tester()
+  .declareExchange(e);
+```
+
+## Declare a binding
+```java
+QueueProperties q = QueueProperties
+  .queueBuilder()
+  .durable(true)
+  .exclusive(true)
+  .autoDelete(true)
+  .name("aQueue")
+  .arguments(new HashMap<>())
+  .build()
+
+ExchangeProperties e = ExchangeProperties
+  .exchangeBuilder()
+  .autoDelete(true)
+  .durable(true)
+  .name("anExchange")
+  .type(BuiltinExchangeType.DIRECT)
+  .arguments(new HashMap<>())
+  .build()
+
+brokerManager.tester()
+  .declareBinding(q,e, "routingKey")
+```
+## Verification
+
+The amqpRunnerTester runs on parallel threads. It fires up when the `initialize` is called but the possible assertionErrors that were caught will never show up on junit as it inspects only the main thread. In order to validate if the amqpRunner assertions were completed successfully or not you need to call `  brokerManager.verify();` which will "join" the threads in order for the junit watcher to see the possible exceptions that exist. This call should be done as the last command in the test to assure correct behaviour
+
+### Full example
+
+This is a full example containing declaration of queues/exchanges and setting up some sample assertions
+
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.BuiltinExchangeType;
